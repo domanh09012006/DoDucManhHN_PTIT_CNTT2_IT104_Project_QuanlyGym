@@ -1,0 +1,132 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "email": "admin@gmail.com",
+      "password": "admin123",
+      "fullName": "Quản trị viên",
+      "role": "admin",
+      "phone": "0901234567"
+    },
+    {
+      "id": "2",
+      "email": "manh@gmail.com",
+      "password": "manh123",
+      "fullName": "Do Duc Manh",
+      "role": "user",
+      "phone": "0987654321"
+    },
+    {
+      "id": "c8cd",
+      "email": "manh1@gmail.com",
+      "password": "123",
+      "fullName": "Đỗ Mạnh",
+      "role": "user",
+      "phone": ""
+    },
+    {
+      "id": "de14",
+      "fullName": "manh",
+      "email": "manh2@gmail.com",
+      "password": "123456789",
+      "phone": "",
+      "role": "user"
+    },
+    {
+      "id": "0690",
+      "fullName": "manh",
+      "email": "manh12@gmail.com",
+      "password": "123456789",
+      "phone": "",
+      "role": "user"
+    },
+    {
+      "id": "a343",
+      "fullName": "manh9",
+      "email": "m@gmail.com",
+      "password": "111111111",
+      "phone": "",
+      "role": "user"
+    },
+    {
+      "id": "087e",
+      "fullName": "manh",
+      "email": "manh3@gmail.com",
+      "password": "12345678",
+      "phone": "",
+      "role": "user"
+    },
+    {
+      "id": "ca51",
+      "fullName": "manh",
+      "email": "manh1@gmail.com",
+      "password": "11111111",
+      "phone": "",
+      "role": "user"
+    }
+  ],
+  "courses": [
+    {
+      "id": "101",
+      "name": "Yoga Giam Cân",
+      "type": "Yoga",
+      "description": "Thư giãn và đốt calo hiệu quả",
+      "price": 150000,
+      "imageUrl": "https://images.pexels.com/photos/3823039/pexels-photo-3823039.jpeg"
+    },
+    {
+      "id": "102",
+      "name": "Gym cường độ cao",
+      "type": "Gym",
+      "description": "Bài tập toàn thân cho người mới bắt đầu",
+      "price": 150000,
+      "imageUrl": "https://images.pexels.com/photos/3823039/pexels-photo-3823039.jpeg"
+    },
+    {
+      "id": "103",
+      "name": "Zumba cardio",
+      "type": "Zumba",
+      "description": "Thể dục nhịp điệu",
+      "price": 150000,
+      "imageUrl": "https://images.pexels.com/photos/3823039/pexels-photo-3823039.jpeg"
+    }
+  ],
+  "bookings": [
+    {
+      "id": "501",
+      "userId": 2,
+      "courseId": 101,
+      "bookingDate": "2025-10-01",
+      "bookingTime": "09:00",
+      "status": "confirmed"
+    },
+    {
+      "id": "502",
+      "userId": 2,
+      "courseId": 102,
+      "bookingDate": "2025-10-05",
+      "bookingTime": "19:30",
+      "status": "pending"
+    }
+  ],
+  "services": [
+    {
+      "id": "101",
+      "name": "Gym & Thể hình",
+      "description": "Các chương trình tăng cơ giảm mỡ chuyên sâu.",
+      "icon": "icon-gym"
+    },
+    {
+      "id": "102",
+      "name": "Yoga & Thiền",
+      "description": "Các lớp tập trung vào sự dẻo dai và thư giãn tinh thần.",
+      "icon": "icon-yoga"
+    },
+    {
+      "id": "103",
+      "name": "Zumba & Nhảy",
+      "description": "Các lớp học cardio năng động theo nhạc.",
+      "icon": "icon-zumba"
+    }
+  ]
+}
