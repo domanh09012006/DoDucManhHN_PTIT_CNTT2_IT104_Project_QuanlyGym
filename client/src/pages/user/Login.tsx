@@ -29,24 +29,21 @@ export default function Login() {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validate()) return;
-
     dispatch(loginUser({ email, password }))
       .unwrap()
       .then((user) => {
         localStorage.setItem("user", JSON.stringify(user));
         if (user.role === "admin") {
-          navigate("/admin");
+          navigate("/admin-dashboard");
         } else {
           navigate("/");
         }
       })
       .catch(() => {});
   };
-
   return (
     <div className="flex h-screen justify-center items-center bg-gray-100">
       <form
@@ -56,7 +53,6 @@ export default function Login() {
         <h2 className="text-center text-2xl font-bold mb-6 text-gray-700">
           Đăng nhập
         </h2>
-
         <label className="mb-1 text-sm text-gray-600">Email</label>
         <input
           type="text"
@@ -68,7 +64,6 @@ export default function Login() {
         {errors.email && (
           <p className="text-red-500 text-sm mb-2">{errors.email}</p>
         )}
-
         <label className="mb-1 text-sm text-gray-600">Mật khẩu</label>
         <input
           type="password"
@@ -88,9 +83,7 @@ export default function Login() {
         >
           {loading ? "Đang xử lý..." : "Đăng nhập"}
         </button>
-
         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-
         <p className="text-center text-sm text-gray-600 mt-4">
           Chưa có tài khoản?{" "}
           <Link to="/register" className="text-blue-500 font-medium">

@@ -6,19 +6,21 @@ interface User {
   fullName: string;
   email: string;
   password: string;
-  role: string; 
+  role: string;
 }
 
 interface AuthState {
   loading: boolean;
   error: string | null;
   currentUser: User | null;
+  role: string | null;
 }
 
 const initialState: AuthState = {
   loading: false,
   error: null,
   currentUser: null,
+  role: null,
 };
 
 export const registerUser = createAsyncThunk(
@@ -34,7 +36,6 @@ export const registerUser = createAsyncThunk(
   }
 );
 
-// Đăng nhập
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (user: { email: string; password: string }, { rejectWithValue }) => {
@@ -59,15 +60,17 @@ const authSlice = createSlice({
   reducers: {
     logout: (state) => {
       state.currentUser = null;
+      state.role = null;
       localStorage.removeItem("user");
     },
     setUserFromStorage: (state, action) => {
       state.currentUser = action.payload;
+      state.role = action.payload?.role || null;
     },
   },
   extraReducers: (builder) => {
     builder
-      // Register
+      // REGISTER
       .addCase(registerUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -75,13 +78,14 @@ const authSlice = createSlice({
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
         state.currentUser = action.payload;
+        state.role = action.payload.role;
         localStorage.setItem("user", JSON.stringify(action.payload));
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })
-      // Login
+      // LOGIN
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -89,6 +93,7 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         state.currentUser = action.payload;
+        state.role = action.payload.role;
         localStorage.setItem("user", JSON.stringify(action.payload));
       })
       .addCase(loginUser.rejected, (state, action) => {
