@@ -1,10 +1,10 @@
 import React from "react";
 import HeaderNav from "./Header";
 import FooterNav from "./Footer";
+import { useNavigate } from "react-router-dom";
 
 export default function HomePage() {
-  const isLoggedIn = true;
-  const isAdmin = true;
+  const navigate = useNavigate();
 
   const classes = [
     {
@@ -26,7 +26,8 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <HeaderNav isLoggedIn={isLoggedIn} isAdmin={isAdmin} />
+      <HeaderNav />
+
       <section
         className="relative h-[450px] flex items-center justify-center text-center text-white"
         style={{
@@ -43,7 +44,10 @@ export default function HomePage() {
           <p className="text-lg mb-6">
             Transform Your Body, Transform Your Life
           </p>
-          <button className="bg-blue-600 px-5 py-2 rounded text-white font-medium hover:bg-blue-700">
+          <button
+            onClick={() => navigate("/booking")}
+            className="bg-blue-600 px-5 py-2 rounded text-white font-medium hover:bg-blue-700"
+          >
             Bắt đầu ngay
           </button>
         </div>
@@ -66,7 +70,10 @@ export default function HomePage() {
               />
               <h3 className="text-lg font-semibold mt-4">{cls.title}</h3>
               <p className="text-sm text-gray-600 px-3 mt-2">{cls.desc}</p>
-              <button className="bg-blue-600 mt-3 px-4 py-2 rounded text-white text-sm hover:bg-blue-700">
+              <button
+                onClick={() => navigate("/booking")}
+                className="bg-blue-600 mt-3 px-4 py-2 rounded text-white text-sm hover:bg-blue-700"
+              >
                 Đặt lịch
               </button>
             </div>

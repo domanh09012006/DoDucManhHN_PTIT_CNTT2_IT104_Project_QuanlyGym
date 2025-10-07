@@ -11,7 +11,6 @@ export default function Login() {
 
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-
   const { loading, error } = useSelector((state: RootState) => state.auth);
 
   const validate = () => {
@@ -20,18 +19,22 @@ export default function Login() {
       newErrors.email = "Email không được để trống";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       newErrors.email = "Email không hợp lệ";
-    } else if (!email.includes("@gmail.com")) {
+    } else if (!email.endsWith("@gmail.com")) {
       newErrors.email = "Email phải có đuôi @gmail.com";
     }
+
     if (!password.trim()) {
       newErrors.password = "Mật khẩu không được để trống";
     }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validate()) return;
+
     dispatch(loginUser({ email, password }))
       .unwrap()
       .then((user) => {
@@ -44,33 +47,40 @@ export default function Login() {
       })
       .catch(() => {});
   };
+
   return (
-    <div className="flex h-screen justify-center items-center bg-gray-100">
+    <div className="flex h-screen justify-center items-center bg-gradient-to-br from-gray-100 to-gray-300">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-lg shadow-md w-80 flex flex-col"
+        className="bg-white p-12 rounded-2xl shadow-2xl w-[420px] flex flex-col border border-gray-200"
       >
-        <h2 className="text-center text-2xl font-bold mb-6 text-gray-700">
-          Đăng nhập
+        <h2 className="text-center text-3xl font-extrabold mb-8 text-gray-800">
+          Đăng nhập tài khoản
         </h2>
-        <label className="mb-1 text-sm text-gray-600">Email</label>
+
+        <label className="mb-2 text-base text-gray-700 font-medium">
+          Email
+        </label>
         <input
           type="text"
-          placeholder="Nhập email"
+          placeholder="Nhập email của bạn"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="p-2 mb-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="p-3 mb-2 border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
         />
         {errors.email && (
           <p className="text-red-500 text-sm mb-2">{errors.email}</p>
         )}
-        <label className="mb-1 text-sm text-gray-600">Mật khẩu</label>
+
+        <label className="mb-2 text-base text-gray-700 font-medium">
+          Mật khẩu
+        </label>
         <input
           type="password"
           placeholder="Nhập mật khẩu"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="p-2 mb-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="p-3 mb-2 border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
         />
         {errors.password && (
           <p className="text-red-500 text-sm mb-2">{errors.password}</p>
@@ -79,14 +89,21 @@ export default function Login() {
         <button
           type="submit"
           disabled={loading}
-          className="bg-blue-500 text-white py-2 rounded font-semibold hover:bg-blue-600 transition"
+          className="mt-4 bg-blue-600 text-white py-3 rounded-lg font-semibold text-lg hover:bg-blue-700 hover:shadow-md transition duration-200"
         >
           {loading ? "Đang xử lý..." : "Đăng nhập"}
         </button>
-        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-        <p className="text-center text-sm text-gray-600 mt-4">
+
+        {error && (
+          <p className="text-red-500 text-sm mt-3 text-center">{error}</p>
+        )}
+
+        <p className="text-center text-base text-gray-700 mt-6">
           Chưa có tài khoản?{" "}
-          <Link to="/register" className="text-blue-500 font-medium">
+          <Link
+            to="/register"
+            className="text-blue-600 font-semibold hover:text-blue-800 transition"
+          >
             Đăng ký ngay
           </Link>
         </p>

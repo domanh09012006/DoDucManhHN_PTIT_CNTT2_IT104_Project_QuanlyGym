@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 interface User {
+  username: string;
   id?: number;
   fullName: string;
   email: string;
@@ -70,7 +71,6 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // REGISTER
       .addCase(registerUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -85,7 +85,6 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      // LOGIN
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
