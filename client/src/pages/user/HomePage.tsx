@@ -1,28 +1,26 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import HeaderNav from "./Header";
 import FooterNav from "./Footer";
 import { useNavigate } from "react-router-dom";
 
+interface Course {
+  id: string;
+  name: string;
+  type: string;
+  description: string;
+  price: number;
+  imageUrl: string;
+}
 export default function HomePage() {
   const navigate = useNavigate();
+  const [courses, setCourses] = useState<Course[]>([]);
 
-  const classes = [
-    {
-      title: "Gym",
-      desc: "Tập luyện với các thiết bị hiện đại",
-      img: "https://images.pexels.com/photos/2261477/pexels-photo-2261477.jpeg",
-    },
-    {
-      title: "Yoga",
-      desc: "Rèn luyện cả sức khỏe lẫn tinh thần",
-      img: "https://images.pexels.com/photos/3823039/pexels-photo-3823039.jpeg",
-    },
-    {
-      title: "Zumba",
-      desc: "Đốt cháy calories với âm nhạc sôi động",
-      img: "https://images.pexels.com/photos/4324021/pexels-photo-4324021.jpeg",
-    },
-  ];
+  useEffect(() => {
+    fetch("http://localhost:3000/courses")
+      .then((res) => res.json())
+      .then((data) => setCourses(data))
+      .catch((err) => console.error("Lỗi khi tải dữ liệu khóa học:", err));
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -57,19 +55,22 @@ export default function HomePage() {
         <h2 className="text-center text-2xl font-bold mb-8">
           Các lớp học phổ biến
         </h2>
-        <div className="grid gap-6 max-w-6xl mx-auto sm:grid-cols-2 md:grid-cols-3">
-          {classes.map((cls) => (
+        <div className="grid gap-6 max-w-6xl mx-auto sm:grid-cols-2 md:grid-cols-3 px-">
+          {courses.map((cls) => (
             <div
-              key={cls.title}
+              key={cls.id}
               className="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition pl-10 pr-10 pb-4"
             >
               <img
-                src={cls.img}
-                alt={cls.title}
+                src={cls.imageUrl}
+                alt={cls.name}
                 className="w-full h-44 object-cover"
               />
-              <h3 className="text-lg font-semibold mt-4">{cls.title}</h3>
-              <p className="text-sm text-gray-600 px-3 mt-2">{cls.desc}</p>
+              <h3 className="text-lg font-semibold mt-4">{cls.name}</h3>
+              <p className="text-base text-gray-800 px-3 mt-2">
+                {cls.description}
+              </p>
+
               <button
                 onClick={() => navigate("/booking")}
                 className="bg-blue-600 mt-3 px-4 py-2 rounded text-white text-sm hover:bg-blue-700"

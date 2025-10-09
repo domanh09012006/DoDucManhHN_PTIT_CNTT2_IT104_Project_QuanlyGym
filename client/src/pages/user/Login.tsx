@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import type { AppDispatch, RootState } from "../../stores/store";
 import { loginUser } from "../../slices/registerSlice";
+import Swal from "sweetalert2";
 
 export default function Login() {
   const [email, setEmail] = useState<string>("");
@@ -36,16 +37,24 @@ export default function Login() {
     if (!validate()) return;
 
     dispatch(loginUser({ email, password }))
-      .unwrap()
-      .then((user) => {
-        localStorage.setItem("user", JSON.stringify(user));
-        if (user.role === "admin") {
-          navigate("/admin-dashboard");
-        } else {
-          navigate("/");
-        }
-      })
-      .catch(() => {});
+  .unwrap()
+  .then((user) => {
+    localStorage.setItem("user", JSON.stringify(user));
+
+    Swal.fire({
+      title: "Đăng nhập thành công!",
+      text: `Chào mừng ${user.fullName || "bạn"} !`,
+      icon: "success",
+      timer: 1000,
+    }).then(() => {
+      if (user.role === "admin") {
+        navigate("/admin-dashboard");
+      } else {
+        navigate("/");
+      }
+    });
+  })
+  .catch(() => {});
   };
 
   return (

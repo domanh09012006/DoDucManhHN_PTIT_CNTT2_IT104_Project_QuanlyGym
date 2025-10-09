@@ -63,81 +63,92 @@
       "password": "11111111",
       "phone": "",
       "role": "user"
+    },
+    {
+      "id": "c8e9",
+      "fullName": "manh",
+      "email": "manh9@gmail.com",
+      "password": "123123123",
+      "phone": "",
+      "role": "user"
+    },
+    {
+      "id": "a962",
+      "fullName": "manhdo",
+      "email": "manh@gmail.com",
+      "password": "123456789",
+      "phone": "",
+      "role": "user"
+    },
+    {
+      "id": "f690",
+      "fullName": "minh",
+      "email": "manh6@gmail.com",
+      "password": "99999999",
+      "phone": "",
+      "role": "user"
     }
   ],
   "courses": [
     {
-      "id": "101",
-      "name": "Yoga Giam Cân",
-      "type": "Yoga",
-      "description": "Thư giãn và đốt calo hiệu quả",
-      "price": 150000,
-      "imageUrl": "https://images.pexels.com/photos/3823039/pexels-photo-3823039.jpeg"
-    },
-    {
       "id": "102",
-      "name": "Gym cường độ cao",
+      "name": "Gym",
       "type": "Gym",
-      "description": "Bài tập toàn thân cho người mới bắt đầu",
+      "description": "Bài tập toàn thân cho người mới",
       "price": 150000,
-      "imageUrl": "https://images.pexels.com/photos/3823039/pexels-photo-3823039.jpeg"
+      "imageUrl": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?fm=jpg&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Z3ltfGVufDB8fDB8fHww&ixlib=rb-4.1.0&q=60&w=3000"
     },
     {
       "id": "103",
-      "name": "Zumba cardio",
+      "name": "Zumba",
       "type": "Zumba",
       "description": "Thể dục nhịp điệu",
       "price": 150000,
-      "imageUrl": "https://images.pexels.com/photos/3823039/pexels-photo-3823039.jpeg"
+      "imageUrl": "https://images.unsplash.com/photo-1524594152303-9fd13543fe6e?fm=jpg&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8enVtYmF8ZW58MHx8MHx8fDA%3D&ixlib=rb-4.1.0&q=60&w=3000"
     }
   ],
   "bookings": [
-    {
-      "id": "1759859488786",
-      "userId": "2",
-      "fullName": "Do Duc Manh",
-      "email": "manh@gmail.com",
-      "course": "Gym",
-      "time": "07:00 - 09:00",
-      "date": "2025-10-30"
-    },
-    {
-      "id": "1759860351706",
-      "userId": "2",
-      "fullName": "Do Duc Manh",
-      "email": "manh@gmail.com",
-      "course": "Zumba",
-      "time": "09:00 - 11:00",
-      "date": "2025-10-30"
-    },
     {
       "id": "1759860767378",
       "userId": "c8cd",
       "fullName": "Đỗ Mạnh",
       "email": "manh1@gmail.com",
       "course": "Gym",
-      "time": "17:00 - 19:00",
+      "time": "17:00",
       "date": "2025-10-16"
+    },
+    {
+      "id": "1759971505154",
+      "userId": "2",
+      "fullName": "Do Duc Manh",
+      "email": "manh@gmail.com",
+      "course": "Gym",
+      "time": "08:00",
+      "date": "2025-10-24"
+    },
+    {
+      "id": "1759971732114",
+      "userId": "2",
+      "fullName": "Do Duc Manh",
+      "email": "manh@gmail.com",
+      "course": "Gym",
+      "time": "08:00",
+      "date": "2025-10-31"
     }
   ],
   "services": [
     {
-      "id": "101",
-      "name": "Gym & Thể hình",
-      "description": "Các chương trình tăng cơ giảm mỡ chuyên sâu.",
-      "icon": "icon-gym"
-    },
-    {
-      "id": "102",
-      "name": "Yoga & Thiền",
-      "description": "Các lớp tập trung vào sự dẻo dai và thư giãn tinh thần.",
-      "icon": "icon-yoga"
-    },
-    {
       "id": "103",
       "name": "Zumba & Nhảy",
       "description": "Các lớp học cardio năng động theo nhạc.",
-      "icon": "icon-zumba"
+      "icon": "icon-zumba",
+      "imageUrl": "https://tse1.mm.bing.net/th/id/OIP.S0WOI-AN0xvOBiDE3joNDwAAAA?pid=Api&P=0&h=220"
+    },
+    {
+      "id": "1760034456664",
+      "name": "a",
+      "description": "a",
+      "imageUrl": "https://tse1.mm.bing.net/th/id/OIP.S0WOI-AN0xvOBiDE3joNDwAAAA?pid=Api&P=0&h=220"
     }
   ]
 }

@@ -28,7 +28,6 @@ export default function HeaderNav() {
             </Link>
           </li>
 
-          {/* 🧍 Người dùng thường */}
           {isLoggedIn && !isAdmin && (
             <>
               <li className="text-yellow-400">
@@ -50,11 +49,15 @@ export default function HeaderNav() {
             </>
           )}
 
-          {/* 👑 Quản trị viên */}
           {isAdmin && (
             <>
               <li className="text-yellow-400">
-                Xin chào quản trị viên {currentUser?.fullName}
+                Xin chào {currentUser?.fullName}
+              </li>
+              <li>
+                <Link to="/booking" className="hover:text-blue-400">
+                  Lịch tập
+                </Link>
               </li>
               <li>
                 <Link to="/admin-dashboard" className="hover:text-blue-400">
@@ -72,7 +75,6 @@ export default function HeaderNav() {
             </>
           )}
 
-          {/* 🚪 Chưa đăng nhập */}
           {!isLoggedIn && (
             <>
               <li>

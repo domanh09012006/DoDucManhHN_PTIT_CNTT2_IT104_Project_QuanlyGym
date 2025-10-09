@@ -1,71 +1,76 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchBookings,
+  deleteBooking,
+  updateBooking,
+} from "../../slices/bookingSlice";
+import type { RootState, AppDispatch } from "../../stores/store";
 import AdminSidebar from "./AdminSidebar";
 
-interface Booking {
-  id: string;
-  userId: string | number;
-  courseId: string | number;
-  bookingDate: string;
-  bookingTime: string;
-  status: string;
-}
-
-interface User {
-  id: string | number;
-  fullName: string;
-  email: string;
-}
-
-interface Course {
-  id: string | number;
-  name: string;
-  type: string;
-}
-
 export default function AdminDashboard() {
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
-  const [courses, setCourses] = useState<Course[]>([]);
+  const dispatch = useDispatch<AppDispatch>();
+  const { bookings } = useSelector((state: RootState) => state.bookings);
 
+  // Bộ lọc
+  const [filterCourse, setFilterCourse] = useState("Tất cả");
+  const [filterEmail, setFilterEmail] = useState("");
+
+  // Modal
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState<any>(null);
+
+  // Load data
   useEffect(() => {
-    const fetchData = async () => {
-      const [bookingRes, userRes, courseRes] = await Promise.all([
-        axios.get("http://localhost:3000/bookings"),
-        axios.get("http://localhost:3000/users"),
-        axios.get("http://localhost:3000/courses"),
-      ]);
-      setBookings(bookingRes.data);
-      setUsers(userRes.data);
-      setCourses(courseRes.data);
-    };
-    fetchData();
-  }, []);
+    dispatch(fetchBookings());
+  }, [dispatch]);
 
-  const totalGym = bookings.filter((b) => {
-    const c = courses.find((course) => course.id === b.courseId);
-    return c?.type === "Gym";
-  }).length;
+  // Thống kê
+  const totalGym = bookings.filter((b) => b.course === "Gym").length;
+  const totalYoga = bookings.filter((b) => b.course === "Yoga").length;
+  const totalZumba = bookings.filter((b) => b.course === "Zumba").length;
 
-  const totalYoga = bookings.filter((b) => {
-    const c = courses.find((course) => course.id === b.courseId);
-    return c?.type === "Yoga";
-  }).length;
+  // Lọc dữ liệu
+  const filteredBookings = bookings.filter((b) => {
+    const emailMatch = b.email
+      .toLowerCase()
+      .includes(filterEmail.toLowerCase());
+    const courseMatch = filterCourse === "Tất cả" || b.course === filterCourse;
+    return emailMatch && courseMatch;
+  });
 
-  const totalZumba = bookings.filter((b) => {
-    const c = courses.find((course) => course.id === b.courseId);
-    return c?.type === "Zumba";
-  }).length;
+  // Xử lý mở modal
+  const handleEdit = (booking: any) => {
+    setSelectedBooking({ ...booking });
+    setShowEditModal(true);
+  };
+  const handleDelete = (booking: any) => {
+    setSelectedBooking(booking);
+    setShowDeleteModal(true);
+  };
+
+  // Xử lý submit modal sửa
+  const handleUpdate = () => {
+    dispatch(updateBooking(selectedBooking));
+    setShowEditModal(false);
+  };
+
+  // Xử lý xóa
+  const confirmDelete = () => {
+    dispatch(deleteBooking(selectedBooking.id));
+    setShowDeleteModal(false);
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-100">
       <AdminSidebar />
-
       <main className="flex-1 ml-64 p-6 overflow-x-auto">
         <h1 className="text-2xl font-bold mb-6 text-gray-800">
-          Thống kê lịch tập
+          Quản lý lịch tập
         </h1>
 
+        {/* === Thống kê === */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           <div className="bg-white p-4 rounded shadow">
             <h3 className="font-semibold text-gray-700">Tổng số lịch Gym</h3>
@@ -81,10 +86,15 @@ export default function AdminDashboard() {
           </div>
         </div>
 
+        {/* === Bộ lọc === */}
         <div className="bg-white p-4 rounded shadow mb-4">
           <h2 className="font-semibold mb-3">Bộ lọc</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <select className="border p-2 rounded outline-none">
+            <select
+              className="border p-2 rounded outline-none"
+              value={filterCourse}
+              onChange={(e) => setFilterCourse(e.target.value)}
+            >
               <option>Tất cả</option>
               <option>Gym</option>
               <option>Yoga</option>
@@ -95,13 +105,14 @@ export default function AdminDashboard() {
               type="text"
               placeholder="Tìm theo email"
               className="border p-2 rounded outline-none"
+              value={filterEmail}
+              onChange={(e) => setFilterEmail(e.target.value)}
             />
-
-            <input type="date" className="border p-2 rounded outline-none" />
           </div>
         </div>
 
-        <div className="bg-white rounded shadow overflow-x-auto">
+        {/* === Bảng danh sách === */}
+        <div className="bg-white rounded shadow overflow-x-auto mb-6">
           <table className="w-full text-sm text-left border border-gray-300 border-collapse">
             <thead className="bg-gray-200 text-gray-700">
               <tr>
@@ -110,38 +121,156 @@ export default function AdminDashboard() {
                 <th className="p-3 border border-gray-300">Khung giờ</th>
                 <th className="p-3 border border-gray-300">Họ tên</th>
                 <th className="p-3 border border-gray-300">Email</th>
-                <th className="p-3 border border-gray-300">Trạng thái</th>
+                <th className="p-3 border border-gray-300 text-center">
+                  Thao tác
+                </th>
               </tr>
             </thead>
             <tbody>
-              {/* {bookings.map((b) => {
-                const user = users.find((u) => u.id === b.userId);
-                const course = courses.find((c) => c.id === b.courseId);
-
-                return (
-                  <tr key={b.id}>
-                    <td className="p-3 border border-gray-300">
-                      {course?.name || "—"}
-                    </td>
-                    <td className="p-3 border border-gray-300">
-                      {b.bookingDate}
-                    </td>
-                    <td className="p-3 border border-gray-300">
-                      {b.bookingTime}
-                    </td>
-                    <td className="p-3 border border-gray-300">
-                      {user?.fullName || "—"}
-                    </td>
-                    <td className="p-3 border border-gray-300">
-                      {user?.email || "—"}
-                    </td>
-                    <td className="p-3 border border-gray-300">{b.status}</td>
-                  </tr>
-                );
-              })} */}
+              {filteredBookings.map((b) => (
+                <tr key={b.id} className="hover:bg-gray-50">
+                  <td className="p-3 border border-gray-300">{b.course}</td>
+                  <td className="p-3 border border-gray-300">{b.date}</td>
+                  <td className="p-3 border border-gray-300">{b.time}</td>
+                  <td className="p-3 border border-gray-300">{b.fullName}</td>
+                  <td className="p-3 border border-gray-300">{b.email}</td>
+                  <td className="p-3 border border-gray-300 text-center">
+                    <button
+                      onClick={() => handleEdit(b)}
+                      className="text-blue-600 hover:underline mr-3"
+                    >
+                      Sửa
+                    </button>
+                    <button
+                      onClick={() => handleDelete(b)}
+                      className="text-red-600 hover:underline"
+                    >
+                      Xóa
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
+
+        {/* === Modal Sửa === */}
+        {/* === Modal Sửa === */}
+        {showEditModal && (
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 transition-all duration-300">
+            <div className="bg-white p-6 rounded-2xl shadow-2xl w-96 animate-fadeIn">
+              <h2 className="text-lg font-semibold mb-4 text-gray-800">
+                Chỉnh sửa lịch tập
+              </h2>
+              <div className="space-y-3">
+                <div>
+                  <label className="text-sm">Họ tên</label>
+                  <input
+                    type="text"
+                    value={selectedBooking.fullName}
+                    disabled
+                    className="border p-2 w-full rounded bg-gray-100"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm">Email</label>
+                  <input
+                    type="text"
+                    value={selectedBooking.email}
+                    disabled
+                    className="border p-2 w-full rounded bg-gray-100"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm">Lớp học</label>
+                  <select
+                    className="border p-2 w-full rounded"
+                    value={selectedBooking.course}
+                    onChange={(e) =>
+                      setSelectedBooking({
+                        ...selectedBooking,
+                        course: e.target.value,
+                      })
+                    }
+                  >
+                    <option>Gym</option>
+                    <option>Yoga</option>
+                    <option>Zumba</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-sm">Ngày tập</label>
+                  <input
+                    type="date"
+                    className="border p-2 w-full rounded"
+                    value={selectedBooking.date}
+                    onChange={(e) =>
+                      setSelectedBooking({
+                        ...selectedBooking,
+                        date: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="text-sm">Khung giờ</label>
+                  <input
+                    type="time"
+                    className="border p-2 w-full rounded"
+                    value={selectedBooking.time}
+                    onChange={(e) =>
+                      setSelectedBooking({
+                        ...selectedBooking,
+                        time: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end mt-5 space-x-3">
+                <button
+                  onClick={() => setShowEditModal(false)}
+                  className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                >
+                  Hủy
+                </button>
+                <button
+                  onClick={handleUpdate}
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  Lưu
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* === Modal Xóa === */}
+        {showDeleteModal && (
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 transition-all duration-300">
+            <div className="bg-white p-6 rounded-2xl shadow-2xl w-80 animate-fadeIn">
+              <h2 className="text-lg font-semibold mb-4">Xác nhận xóa</h2>
+              <p className="mb-5 text-gray-700">
+                Bạn có chắc chắn muốn xóa lịch tập này không?
+              </p>
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                >
+                  Hủy
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                >
+                  Xóa
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

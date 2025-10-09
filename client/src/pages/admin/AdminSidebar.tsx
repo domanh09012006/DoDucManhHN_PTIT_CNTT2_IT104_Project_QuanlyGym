@@ -34,7 +34,7 @@ export default function AdminSidebar() {
       <div className="px-3 pb-4">
         <Link
           to="/login"
-          className="block py-2.5 px-4 rounded text-red-400 hover:text-white hover:bg-red-600 transition-all duration-200"
+          className="text-center block py-2.5 px-4 rounded text-red-400 hover:text-white hover:bg-red-600 transition-all duration-200"
         >
           Đăng xuất
         </Link>

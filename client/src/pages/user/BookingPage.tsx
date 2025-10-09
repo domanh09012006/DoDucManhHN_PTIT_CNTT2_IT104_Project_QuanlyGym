@@ -25,13 +25,19 @@ export default function BookingPage() {
   const [form, setForm] = useState({ course: "", time: "", date: "" });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  // 📦 Lấy lịch tập từ server (và lọc theo người dùng)
+  // Lấy lịch tập từ server (và lọc theo người dùng)
   useEffect(() => {
     if (!currentUser) {
       navigate("/login");
-      return;
     }
+  }, [currentUser, navigate]);
+
+  // Khi đã có user thì load lịch tập
+  useEffect(() => {
+    if (!currentUser) return;
 
     const fetchBookings = async () => {
       try {
@@ -48,23 +54,23 @@ export default function BookingPage() {
     };
 
     fetchBookings();
-  }, [currentUser, navigate]);
+  }, [currentUser]);
 
-  // 📋 Ghi nhận thay đổi trong form
+  //  Ghi nhận thay đổi trong form
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // 💾 Lưu hoặc sửa lịch
+  // Lưu hoặc sửa lịch
   const handleSave = async () => {
     if (!form.course || !form.time || !form.date) {
       setError("Không được để trống!");
       return;
     }
 
-    // ✅ Kiểm tra trùng lịch (cùng ngày + cùng giờ của chính user)
+    //  Kiểm tra trùng lịch (cùng ngày + cùng giờ của chính user)
     const isDuplicate = bookings.some(
       (b) => b.date === form.date && b.time === form.time && b.id !== editingId // không tính chính lịch đang sửa
     );
@@ -76,7 +82,7 @@ export default function BookingPage() {
 
     try {
       if (editingId) {
-        // 🛠️ Sửa lịch
+        //  Sửa lịch
         const updatedBooking: Booking = {
           id: editingId,
           userId: currentUser?.id?.toString() || "",
@@ -97,7 +103,7 @@ export default function BookingPage() {
         );
         setBookings(updatedList);
       } else {
-        // ➕ Thêm lịch mới
+        //  Thêm lịch mới
         const newBooking: Booking = {
           id: Date.now().toString(),
           userId: currentUser?.id?.toString() || "",
@@ -121,18 +127,25 @@ export default function BookingPage() {
     }
   };
 
-  // 🗑️ Xóa lịch tập
-  const handleDelete = async (id: string) => {
-    try {
-      await axios.delete(`http://localhost:3000/bookings/${id}`);
-      const filtered = bookings.filter((b) => b.id !== id);
-      setBookings(filtered);
-    } catch (err) {
-      console.error("Lỗi khi xóa:", err);
+  //  Xóa lịch tập
+  const handleConfirmDelete = async () => {
+    if (selectedId) {
+      try {
+        await axios.delete(`http://localhost:3000/bookings/${selectedId}`);
+        setBookings(bookings.filter((b) => b.id !== selectedId));
+        setShowDeleteModal(false);
+        setSelectedId(null);
+      } catch (err) {
+        console.error("Lỗi khi xóa:", err);
+      }
     }
   };
+  const openDeleteModal = (id: string) => {
+    setSelectedId(id);
+    setShowDeleteModal(true);
+  };
 
-  // ✏️ Mở modal để sửa
+  //  Mở modal để sửa
   const handleEdit = (booking: Booking) => {
     setForm({
       course: booking.course,
@@ -201,7 +214,7 @@ export default function BookingPage() {
                         Sửa
                       </button>
                       <button
-                        onClick={() => handleDelete(b.id)}
+                        onClick={() => openDeleteModal(b.id)}
                         className="text-red-600 hover:underline"
                       >
                         Xóa
@@ -246,10 +259,16 @@ export default function BookingPage() {
               onChange={handleChange}
               className="w-full border border-gray-300 rounded-lg p-2 mb-4"
             >
-              <option value="">Chọn khung giờ</option>
-              <option value="07:00 - 09:00">07:00 - 09:00</option>
-              <option value="09:00 - 11:00">09:00 - 11:00</option>
-              <option value="17:00 - 19:00">17:00 - 19:00</option>
+              <option value="">Chọn giờ tập</option>
+              <option value="07:00">07:00</option>
+              <option value="08:00">08:00</option>
+              <option value="09:00">09:00</option>
+              <option value="10:00">10:00</option>
+              <option value="14:00">14:00</option>
+              <option value="15:00">15:00</option>
+              <option value="16:00">16:00</option>
+              <option value="17:00">17:00</option>
+              <option value="18:00">18:00</option>
             </select>
 
             <label className="block text-sm font-medium mb-1">Ngày tập</label>
@@ -273,6 +292,34 @@ export default function BookingPage() {
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
                 Lưu
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showDeleteModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-900/30 backdrop-blur-sm z-50">
+          <div className="bg-white rounded-xl w-[400px] p-6 shadow-lg">
+            <h3 className="text-lg font-semibold text-center mb-4 text-red-600">
+              Xác nhận xóa lịch tập
+            </h3>
+
+            <p className="text-center text-gray-700 mb-6">
+              Bạn có chắc chắn muốn xóa lịch tập này không?
+            </p>
+
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+              >
+                Xóa
               </button>
             </div>
           </div>
