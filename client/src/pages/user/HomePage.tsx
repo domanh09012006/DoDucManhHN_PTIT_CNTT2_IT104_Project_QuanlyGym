@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import HeaderNav from "./Header";
 import FooterNav from "./Footer";
 import { useNavigate } from "react-router-dom";
@@ -55,7 +55,7 @@ export default function HomePage() {
         <h2 className="text-center text-2xl font-bold mb-8">
           Các lớp học phổ biến
         </h2>
-        <div className="grid gap-6 max-w-6xl mx-auto sm:grid-cols-2 md:grid-cols-3 px-">
+        <div className="grid gap-20 max-w-6xl mx-auto sm:grid-cols-2 md:grid-cols-3 ">
           {courses.map((cls) => (
             <div
               key={cls.id}

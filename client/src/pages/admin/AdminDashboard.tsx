@@ -8,30 +8,34 @@ import {
 import type { RootState, AppDispatch } from "../../stores/store";
 import AdminSidebar from "./AdminSidebar";
 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  ResponsiveContainer,
+  Cell,
+  LabelList,
+} from "recharts";
+
 export default function AdminDashboard() {
   const dispatch = useDispatch<AppDispatch>();
   const { bookings } = useSelector((state: RootState) => state.bookings);
-
-  // Bộ lọc
   const [filterCourse, setFilterCourse] = useState("Tất cả");
   const [filterEmail, setFilterEmail] = useState("");
-
-  // Modal
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
+  const [error, setError] = useState("");
 
-  // Load data
   useEffect(() => {
     dispatch(fetchBookings());
   }, [dispatch]);
 
-  // Thống kê
   const totalGym = bookings.filter((b) => b.course === "Gym").length;
   const totalYoga = bookings.filter((b) => b.course === "Yoga").length;
   const totalZumba = bookings.filter((b) => b.course === "Zumba").length;
 
-  // Lọc dữ liệu
   const filteredBookings = bookings.filter((b) => {
     const emailMatch = b.email
       .toLowerCase()
@@ -40,23 +44,44 @@ export default function AdminDashboard() {
     return emailMatch && courseMatch;
   });
 
-  // Xử lý mở modal
   const handleEdit = (booking: any) => {
     setSelectedBooking({ ...booking });
+    setError("");
     setShowEditModal(true);
   };
+
   const handleDelete = (booking: any) => {
     setSelectedBooking(booking);
     setShowDeleteModal(true);
   };
 
-  // Xử lý submit modal sửa
   const handleUpdate = () => {
+    if (
+      !selectedBooking.course ||
+      !selectedBooking.date ||
+      !selectedBooking.time
+    ) {
+      setError("Không được để trống!");
+      return;
+    }
+
+    // Kiểm tra trùng lịch
+    const isDuplicate = bookings.some(
+      (b) =>
+        b.id !== selectedBooking.id &&
+        b.date === selectedBooking.date &&
+        b.time === selectedBooking.time
+    );
+
+    if (isDuplicate) {
+      setError("Khung giờ và ngày này đã được đặt!");
+      return;
+    }
+
     dispatch(updateBooking(selectedBooking));
     setShowEditModal(false);
   };
 
-  // Xử lý xóa
   const confirmDelete = () => {
     dispatch(deleteBooking(selectedBooking.id));
     setShowDeleteModal(false);
@@ -86,6 +111,32 @@ export default function AdminDashboard() {
           </div>
         </div>
 
+        {/* === Biểu đồ thống kê === */}
+        <div className="bg-white p-4 rounded shadow mb-6">
+          <h2 className="text-lg font-semibold mb-4 text-gray-800">
+            Biểu đồ thống kê lịch tập
+          </h2>
+
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart
+              data={[
+                { name: "Gym", value: totalGym },
+                { name: "Yoga", value: totalYoga },
+                { name: "Zumba", value: totalZumba },
+              ]}
+            >
+              <XAxis dataKey="name" />
+              <YAxis allowDecimals={false} />
+              <Bar dataKey="value">
+                <Cell fill="#60A5FA" />
+                <Cell fill="#86EFAC" />
+                <Cell fill="#C4B5FD" />
+                <LabelList dataKey="value" position="top" />
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
         {/* === Bộ lọc === */}
         <div className="bg-white p-4 rounded shadow mb-4">
           <h2 className="font-semibold mb-3">Bộ lọc</h2>
@@ -105,8 +156,8 @@ export default function AdminDashboard() {
               type="text"
               placeholder="Tìm theo email"
               className="border p-2 rounded outline-none"
-              value={filterEmail}
-              onChange={(e) => setFilterEmail(e.target.value)}
+              // value={filterEmail}
+              // onChange={(e) => setFilterEmail(e.target.value)}
             />
           </div>
         </div>
@@ -155,13 +206,17 @@ export default function AdminDashboard() {
         </div>
 
         {/* === Modal Sửa === */}
-        {/* === Modal Sửa === */}
         {showEditModal && (
           <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 transition-all duration-300">
             <div className="bg-white p-6 rounded-2xl shadow-2xl w-96 animate-fadeIn">
               <h2 className="text-lg font-semibold mb-4 text-gray-800">
                 Chỉnh sửa lịch tập
               </h2>
+
+              {error && (
+                <p className="text-red-500 text-sm mb-3 text-center">{error}</p>
+              )}
+
               <div className="space-y-3">
                 <div>
                   <label className="text-sm">Họ tên</label>
@@ -213,9 +268,8 @@ export default function AdminDashboard() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm">Khung giờ</label>
-                  <input
-                    type="time"
+                  <label className="text-sm">Gio tập</label>
+                  <select
                     className="border p-2 w-full rounded"
                     value={selectedBooking.time}
                     onChange={(e) =>
@@ -224,7 +278,14 @@ export default function AdminDashboard() {
                         time: e.target.value,
                       })
                     }
-                  />
+                  >
+                    <option value="">Chọn giờ tập</option>
+                    <option value="07:00">07:00</option>
+                    <option value="09:00">09:00</option>
+                    <option value="14:00">14:00</option>
+                    <option value="16:00">16:00</option>
+                    <option value="18:00">18:00</option>
+                  </select>
                 </div>
               </div>
 

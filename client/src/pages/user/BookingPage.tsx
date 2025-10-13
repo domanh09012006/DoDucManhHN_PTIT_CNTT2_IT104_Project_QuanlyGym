@@ -28,14 +28,12 @@ export default function BookingPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  // Lấy lịch tập từ server (và lọc theo người dùng)
   useEffect(() => {
     if (!currentUser) {
       navigate("/login");
     }
   }, [currentUser, navigate]);
 
-  // Khi đã có user thì load lịch tập
   useEffect(() => {
     if (!currentUser) return;
 
@@ -56,21 +54,26 @@ export default function BookingPage() {
     fetchBookings();
   }, [currentUser]);
 
-  //  Ghi nhận thay đổi trong form
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // Lưu hoặc sửa lịch
   const handleSave = async () => {
+    const selectedDate = new Date(form.date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (selectedDate < today) {
+      setError("Không thể chọn ngày trong quá khứ!");
+      return;
+    }
     if (!form.course || !form.time || !form.date) {
       setError("Không được để trống!");
       return;
     }
 
-    //  Kiểm tra trùng lịch (cùng ngày + cùng giờ của chính user)
     const isDuplicate = bookings.some(
       (b) => b.date === form.date && b.time === form.time && b.id !== editingId // không tính chính lịch đang sửa
     );
@@ -82,7 +85,6 @@ export default function BookingPage() {
 
     try {
       if (editingId) {
-        //  Sửa lịch
         const updatedBooking: Booking = {
           id: editingId,
           userId: currentUser?.id?.toString() || "",
@@ -103,7 +105,6 @@ export default function BookingPage() {
         );
         setBookings(updatedList);
       } else {
-        //  Thêm lịch mới
         const newBooking: Booking = {
           id: Date.now().toString(),
           userId: currentUser?.id?.toString() || "",
@@ -127,7 +128,6 @@ export default function BookingPage() {
     }
   };
 
-  //  Xóa lịch tập
   const handleConfirmDelete = async () => {
     if (selectedId) {
       try {
@@ -145,7 +145,6 @@ export default function BookingPage() {
     setShowDeleteModal(true);
   };
 
-  //  Mở modal để sửa
   const handleEdit = (booking: Booking) => {
     setForm({
       course: booking.course,
@@ -182,7 +181,7 @@ export default function BookingPage() {
               <tr>
                 <th className="p-3 border-b">Lớp học</th>
                 <th className="p-3 border-b">Ngày tập</th>
-                <th className="p-3 border-b">Khung giờ</th>
+                <th className="p-3 border-b">Giờ tập</th>
                 <th className="p-3 border-b">Họ tên</th>
                 <th className="p-3 border-b">Email</th>
                 <th className="p-3 border-b text-center">Thao tác</th>
@@ -261,13 +260,9 @@ export default function BookingPage() {
             >
               <option value="">Chọn giờ tập</option>
               <option value="07:00">07:00</option>
-              <option value="08:00">08:00</option>
               <option value="09:00">09:00</option>
-              <option value="10:00">10:00</option>
               <option value="14:00">14:00</option>
-              <option value="15:00">15:00</option>
               <option value="16:00">16:00</option>
-              <option value="17:00">17:00</option>
               <option value="18:00">18:00</option>
             </select>
 

@@ -19,7 +19,11 @@ export default function HeaderNav() {
 
   return (
     <header className="bg-black text-white px-6 py-4 flex justify-between items-center">
-      <h1 className="text-xl font-bold">GYM MANAGEMENT</h1>
+      <h1 className="text-xl font-bold">
+        <Link to="/" className="hover:text-blue-400">
+          GYM MANAGEMENT
+        </Link>
+      </h1>
       <nav>
         <ul className="flex gap-6 list-none m-0 p-0">
           <li>
